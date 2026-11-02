@@ -1,0 +1,1022 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Singz vs The Next Player | Dice Challenge</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --primary: #6658e8;
+    --dark: #5143c5;
+    --background: #f3f4fb;
+    --text: #20243a;
+    --muted: #737991;
+    --green: #16a477;
+    --orange: #f39b38;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 25px 15px;
+    font-family: Arial, sans-serif;
+    background:
+        radial-gradient(circle at top left, #e4e0ff, transparent 40%),
+        linear-gradient(135deg, #f6f5ff, #edf1fb);
+    color: var(--text);
+}
+
+.container {
+    width: 100%;
+    max-width: 650px;
+    padding: 32px;
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(48,43,100,.12);
+}
+
+.tag {
+    display: inline-block;
+    padding: 7px 13px;
+    border-radius: 30px;
+    background: #eeecff;
+    color: var(--primary);
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+}
+
+header {
+    text-align: center;
+}
+
+h1 {
+    font-size: 29px;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.7;
+    margin-bottom: 25px;
+}
+
+.game-status {
+    padding: 13px;
+    background: #f3f1ff;
+    color: var(--primary);
+    border-radius: 12px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 22px;
+}
+
+.players {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.player {
+    border: 2px solid #eeeef5;
+    border-radius: 16px;
+    padding: 18px 10px;
+    text-align: center;
+    transition: .2s;
+}
+
+.player.active {
+    border-color: var(--primary);
+    background: #f5f3ff;
+    box-shadow: 0 6px 20px rgba(102,88,232,.10);
+}
+
+.player.winner {
+    border-color: var(--green);
+    background: #edfff7;
+}
+
+.player-icon {
+    font-size: 29px;
+    margin-bottom: 9px;
+}
+
+.player h2 {
+    font-size: 15px;
+    margin-bottom: 7px;
+}
+
+.player-label {
+    font-size: 10px;
+    color: var(--muted);
+    margin-bottom: 12px;
+}
+
+.score {
+    font-size: 34px;
+    font-weight: bold;
+    color: var(--primary);
+}
+
+.player.active .score {
+    color: var(--primary);
+}
+
+.player.winner .score {
+    color: var(--green);
+}
+
+.score-label {
+    font-size: 10px;
+    color: var(--muted);
+}
+
+.dice-area {
+    min-height: 175px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dice {
+    width: 135px;
+    height: 135px;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    grid-template-rows: repeat(3,1fr);
+    gap: 5px;
+    padding: 13px;
+    background: linear-gradient(145deg,#796cf5,#5143c5);
+    border-radius: 22px;
+    box-shadow: 0 12px 25px rgba(102,88,232,.3);
+}
+
+.dot {
+    width: 17px;
+    height: 17px;
+    background: white;
+    border-radius: 50%;
+    align-self: center;
+    justify-self: center;
+    opacity: 0;
+}
+
+.dot.show {
+    opacity: 1;
+}
+
+.rolling {
+    animation: roll .65s ease-in-out;
+}
+
+@keyframes roll {
+    0% { transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(90deg) scale(.8); }
+    50% { transform: rotate(180deg) scale(1.1); }
+    75% { transform: rotate(270deg) scale(.85); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+
+.result {
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    margin: 5px 0 20px;
+}
+
+.result strong {
+    display: block;
+    font-size: 38px;
+    color: var(--primary);
+    margin-top: 6px;
+}
+
+.roll-button {
+    width: 100%;
+    border: none;
+    padding: 16px;
+    background: linear-gradient(135deg,#796cf5,#5143c5);
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 7px 16px rgba(102,88,232,.25);
+    transition: .2s;
+}
+
+.roll-button:hover {
+    transform: translateY(-2px);
+}
+
+.roll-button:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+.secondary-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.secondary-buttons button {
+    flex: 1;
+    padding: 11px;
+    border: 1px solid #e4e5ef;
+    background: white;
+    color: var(--text);
+    border-radius: 9px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.secondary-buttons button:hover {
+    background: #f4f2ff;
+}
+
+.progress-section {
+    margin-top: 23px;
+}
+
+.progress-heading {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 9px;
+}
+
+.progress-bar {
+    height: 9px;
+    background: #eeeef5;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg,#796cf5,#16a477);
+    border-radius: 20px;
+    transition: width .3s;
+}
+
+.history {
+    margin-top: 26px;
+    border-top: 1px solid #eeeef5;
+    padding-top: 19px;
+}
+
+.history-heading {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 13px;
+}
+
+.history-heading h2 {
+    font-size: 14px;
+}
+
+.history-heading span {
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.history-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-height: 32px;
+}
+
+.history-item {
+    padding: 8px 10px;
+    background: #f0efff;
+    color: var(--primary);
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.empty-history {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.description {
+    margin-top: 27px;
+    padding: 17px;
+    background: #f8f8fc;
+    border-radius: 13px;
+}
+
+.description h3 {
+    font-size: 13px;
+    margin-bottom: 9px;
+}
+
+.description p {
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.8;
+}
+
+.footer {
+    margin-top: 23px;
+    padding-top: 17px;
+    border-top: 1px solid #eeeef5;
+    text-align: center;
+    color: #9297aa;
+    font-size: 10px;
+    line-height: 1.8;
+}
+
+.footer strong {
+    color: var(--primary);
+}
+
+@media(max-width:450px) {
+    .container {
+        padding: 23px 16px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    .player {
+        padding: 15px 7px;
+    }
+
+    .score {
+        font-size: 29px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <header>
+        <div class="tag">JAVASCRIPT MULTIPLAYER PROJECT</div>
+
+        <h1>🎲 Singz vs The Next Player</h1>
+
+        <p class="subtitle">
+            Two players. One dice. One winner!
+            Roll the dice, collect points and see who reaches
+            the winning target first.
+        </p>
+    </header>
+
+    <div class="game-status" id="gameStatus">
+        🎮 Singz's turn — Roll the dice!
+    </div>
+
+    <!-- PLAYERS -->
+
+    <div class="players">
+
+        <div class="player active" id="player1">
+
+            <div class="player-icon">👑</div>
+
+            <h2>Singz</h2>
+
+            <div class="player-label">PLAYER 1</div>
+
+            <div class="score" id="score1">0</div>
+
+            <div class="score-label">TOTAL POINTS</div>
+
+        </div>
+
+        <div class="player" id="player2">
+
+            <div class="player-icon">🎯</div>
+
+            <h2>The Next Player</h2>
+
+            <div class="player-label">PLAYER 2</div>
+
+            <div class="score" id="score2">0</div>
+
+            <div class="score-label">TOTAL POINTS</div>
+
+        </div>
+
+    </div>
+
+    <!-- DICE -->
+
+    <div class="dice-area">
+
+        <div class="dice" id="dice">
+
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+
+        </div>
+
+    </div>
+
+    <div class="result">
+
+        Latest dice result
+
+        <strong id="result">—</strong>
+
+    </div>
+
+    <!-- MAIN BUTTON -->
+
+    <button class="roll-button" id="rollButton">
+        🎲 Roll the Dice
+    </button>
+
+    <div class="secondary-buttons">
+
+        <button id="soundButton">🔊 Sound: On</button>
+
+        <button id="resetButton">↻ Reset Game</button>
+
+    </div>
+
+    <!-- PROGRESS -->
+
+    <div class="progress-section">
+
+        <div class="progress-heading">
+
+            <span>WINNING TARGET</span>
+
+            <span id="targetText">0 / 30 points</span>
+
+        </div>
+
+        <div class="progress-bar">
+
+            <div class="progress-fill" id="progressFill"></div>
+
+        </div>
+
+    </div>
+
+    <!-- HISTORY -->
+
+    <div class="history">
+
+        <div class="history-heading">
+
+            <h2>📊 Game History</h2>
+
+            <span id="rollCount">0 rolls</span>
+
+        </div>
+
+        <div class="history-list" id="historyList">
+
+            <span class="empty-history">
+                Your game results will appear here.
+            </span>
+
+        </div>
+
+    </div>
+
+    <!-- DESCRIPTION -->
+
+    <div class="description">
+
+        <h3>📖 About This Game</h3>
+
+        <p>
+            Singz vs The Next Player is a two-player JavaScript
+            dice challenge developed using HTML, CSS and JavaScript.
+            Players take turns rolling a virtual six-sided dice.
+            Each roll adds points to the active player's score.
+            The first player to reach 30 points wins the game.
+            The application demonstrates JavaScript variables,
+            functions, DOM manipulation, event listeners,
+            conditional statements, random number generation
+            and CSS animations.
+        </p>
+
+    </div>
+
+    <!-- CREDIT -->
+
+    <div class="footer">
+
+        <strong>Designed & Developed by Ansu Singhateh (SINGZ)</strong>
+
+        <br>
+
+        JavaScript Practice Project | Learning by Building 🚀
+
+        <br>
+
+        Built with HTML5 • CSS3 • JavaScript
+
+        <br>
+
+        © 2026 SINGZ. All Rights Reserved.
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =====================================
+   1. SELECT HTML ELEMENTS
+===================================== */
+
+const dice = document.getElementById("dice");
+const dots = document.querySelectorAll(".dot");
+
+const resultDisplay = document.getElementById("result");
+
+const rollButton = document.getElementById("rollButton");
+const resetButton = document.getElementById("resetButton");
+const soundButton = document.getElementById("soundButton");
+
+const historyList = document.getElementById("historyList");
+const rollCount = document.getElementById("rollCount");
+
+const gameStatus = document.getElementById("gameStatus");
+
+const score1Display = document.getElementById("score1");
+const score2Display = document.getElementById("score2");
+
+const player1Card = document.getElementById("player1");
+const player2Card = document.getElementById("player2");
+
+const progressFill = document.getElementById("progressFill");
+const targetText = document.getElementById("targetText");
+
+
+/* =====================================
+   2. GAME CONFIGURATION
+===================================== */
+
+const WINNING_SCORE = 30;
+
+const diceFaces = {
+
+    1: [5],
+
+    2: [1, 9],
+
+    3: [1, 5, 9],
+
+    4: [1, 3, 7, 9],
+
+    5: [1, 3, 5, 7, 9],
+
+    6: [1, 3, 4, 6, 7, 9]
+
+};
+
+
+/* =====================================
+   3. GAME VARIABLES
+===================================== */
+
+let scores = [0, 0];
+
+let currentPlayer = 0;
+
+let history = [];
+
+let soundEnabled = true;
+
+let rolling = false;
+
+let gameOver = false;
+
+
+/* =====================================
+   4. DISPLAY DICE
+===================================== */
+
+function displayDice(number) {
+
+    dots.forEach((dot, index) => {
+
+        const position = index + 1;
+
+        dot.classList.toggle(
+            "show",
+            diceFaces[number].includes(position)
+        );
+
+    });
+
+    resultDisplay.textContent = number;
+
+}
+
+
+/* =====================================
+   5. RANDOM NUMBER GENERATOR
+===================================== */
+
+function generateRandomNumber() {
+
+    return Math.floor(Math.random() * 6) + 1;
+
+}
+
+
+/* =====================================
+   6. SOUND EFFECT
+===================================== */
+
+function playSound() {
+
+    if (!soundEnabled) return;
+
+    try {
+
+        const AudioContext =
+            window.AudioContext || window.webkitAudioContext;
+
+        const audio = new AudioContext();
+
+        const oscillator = audio.createOscillator();
+
+        const gain = audio.createGain();
+
+        oscillator.connect(gain);
+
+        gain.connect(audio.destination);
+
+        oscillator.frequency.value = 450;
+
+        oscillator.type = "sine";
+
+        gain.gain.setValueAtTime(
+            0.12,
+            audio.currentTime
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.001,
+            audio.currentTime + 0.15
+        );
+
+        oscillator.start();
+
+        oscillator.stop(audio.currentTime + 0.15);
+
+        oscillator.onended = () => audio.close();
+
+    } catch (error) {
+
+        console.log("Audio unavailable:", error);
+
+    }
+
+}
+
+
+/* =====================================
+   7. UPDATE PLAYER DISPLAY
+===================================== */
+
+function updateScores() {
+
+    score1Display.textContent = scores[0];
+
+    score2Display.textContent = scores[1];
+
+    player1Card.classList.toggle(
+        "active",
+        currentPlayer === 0 && !gameOver
+    );
+
+    player2Card.classList.toggle(
+        "active",
+        currentPlayer === 1 && !gameOver
+    );
+
+    const highestScore = Math.max(...scores);
+
+    const progress = Math.min(
+        (highestScore / WINNING_SCORE) * 100,
+        100
+    );
+
+    progressFill.style.width = progress + "%";
+
+    targetText.textContent =
+        highestScore + " / " + WINNING_SCORE + " points";
+
+}
+
+
+/* =====================================
+   8. SWITCH PLAYER
+===================================== */
+
+function switchPlayer() {
+
+    currentPlayer = currentPlayer === 0 ? 1 : 0;
+
+    const playerName =
+        currentPlayer === 0
+        ? "Singz"
+        : "The Next Player";
+
+    gameStatus.textContent =
+        "🎮 " + playerName + "'s turn — Roll the dice!";
+
+    updateScores();
+
+}
+
+
+/* =====================================
+   9. UPDATE GAME HISTORY
+===================================== */
+
+function updateHistory() {
+
+    historyList.innerHTML = "";
+
+    if (history.length === 0) {
+
+        historyList.innerHTML =
+            '<span class="empty-history">' +
+            'Your game results will appear here.' +
+            '</span>';
+
+    } else {
+
+        history.slice(0, 20).forEach(item => {
+
+            const element = document.createElement("div");
+
+            element.className = "history-item";
+
+            element.textContent =
+                item.player + ": 🎲 " + item.roll;
+
+            historyList.appendChild(element);
+
+        });
+
+    }
+
+    rollCount.textContent =
+        history.length +
+        (history.length === 1 ? " roll" : " rolls");
+
+}
+
+
+/* =====================================
+   10. CHECK WINNER
+===================================== */
+
+function checkWinner() {
+
+    if (scores[currentPlayer] >= WINNING_SCORE) {
+
+        gameOver = true;
+
+        const winner =
+            currentPlayer === 0
+            ? "👑 Singz"
+            : "🏆 The Next Player";
+
+        gameStatus.textContent =
+            "🎉 " + winner + " WINS THE GAME!";
+
+        player1Card.classList.remove("active");
+        player2Card.classList.remove("active");
+
+        player1Card.classList.toggle(
+            "winner",
+            currentPlayer === 0
+        );
+
+        player2Card.classList.toggle(
+            "winner",
+            currentPlayer === 1
+        );
+
+        rollButton.textContent = "🏆 Game Completed";
+
+        rollButton.disabled = true;
+
+        progressFill.style.width = "100%";
+
+        targetText.textContent = "WINNER!";
+
+        return true;
+
+    }
+
+    return false;
+
+}
+
+
+/* =====================================
+   11. ROLL THE DICE
+===================================== */
+
+function rollDice() {
+
+    if (rolling || gameOver) return;
+
+    rolling = true;
+
+    rollButton.disabled = true;
+
+    rollButton.textContent = "Rolling...";
+
+    dice.classList.remove("rolling");
+
+    void dice.offsetWidth;
+
+    dice.classList.add("rolling");
+
+    let counter = 0;
+
+    const animation = setInterval(() => {
+
+        displayDice(generateRandomNumber());
+
+        counter++;
+
+        if (counter >= 8) {
+
+            clearInterval(animation);
+
+            const finalNumber = generateRandomNumber();
+
+            displayDice(finalNumber);
+
+            // Add points to the active player
+
+            scores[currentPlayer] += finalNumber;
+
+            const playerName =
+                currentPlayer === 0
+                ? "Singz"
+                : "Next Player";
+
+            // Save history
+
+            history.unshift({
+
+                player: playerName,
+
+                roll: finalNumber
+
+            });
+
+            updateScores();
+
+            updateHistory();
+
+            playSound();
+
+            dice.classList.remove("rolling");
+
+            // Check whether a player has won
+
+            const hasWon = checkWinner();
+
+            rolling = false;
+
+            if (!hasWon) {
+
+                switchPlayer();
+
+                rollButton.disabled = false;
+
+                rollButton.textContent = "🎲 Roll the Dice";
+
+            }
+
+        }
+
+    }, 90);
+
+}
+
+
+/* =====================================
+   12. SOUND TOGGLE
+===================================== */
+
+soundButton.addEventListener("click", () => {
+
+    soundEnabled = !soundEnabled;
+
+    soundButton.textContent = soundEnabled
+        ? "🔊 Sound: On"
+        : "🔇 Sound: Off";
+
+});
+
+
+/* =====================================
+   13. RESET GAME
+===================================== */
+
+function resetGame() {
+
+    if (rolling) return;
+
+    scores = [0, 0];
+
+    currentPlayer = 0;
+
+    history = [];
+
+    gameOver = false;
+
+    rolling = false;
+
+    resultDisplay.textContent = "—";
+
+    dots.forEach(dot => {
+
+        dot.classList.remove("show");
+
+    });
+
+    dice.classList.remove("rolling");
+
+    player1Card.classList.remove("winner");
+
+    player2Card.classList.remove("winner");
+
+    gameStatus.textContent =
+        "🎮 Singz's turn — Roll the dice!";
+
+    rollButton.disabled = false;
+
+    rollButton.textContent = "🎲 Roll the Dice";
+
+    updateScores();
+
+    updateHistory();
+
+}
+
+
+/* =====================================
+   14. EVENT LISTENERS
+===================================== */
+
+rollButton.addEventListener("click", rollDice);
+
+resetButton.addEventListener("click", resetGame);
+
+
+/* =====================================
+   15. INITIALIZE APPLICATION
+===================================== */
+
+updateScores();
+
+updateHistory();
+
+</script>
+
+</body>
+</html>
